@@ -78,6 +78,7 @@ public class Chat extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+	    IRCSex.neverStop();
 		unregisterPermissions();
 		// reset any handles
 		
@@ -122,6 +123,7 @@ public class Chat extends JavaPlugin {
 				if (Double.valueOf(test.getDescription().getVersion()) >= 3.1) {
 					craftIRC = (CraftIRC) test;
 					irc = new CraftIRCHandler(this, craftIRC, "towny");
+					IRCSex.startMeUp(this, craftIRC);
 				} else
 					getLogger().warning("TownyChat requires CraftIRC version 3.1 or higher to relay chat.");
 			} catch (NumberFormatException e) {

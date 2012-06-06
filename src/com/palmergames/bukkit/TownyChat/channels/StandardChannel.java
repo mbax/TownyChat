@@ -13,15 +13,13 @@ import org.dynmap.DynmapAPI;
 import com.earth2me.essentials.User;
 import com.palmergames.bukkit.TownyChat.Chat;
 import com.palmergames.bukkit.TownyChat.CraftIRCHandler;
+import com.palmergames.bukkit.TownyChat.IRCSex;
 import com.palmergames.bukkit.TownyChat.TownyChatFormatter;
 import com.palmergames.bukkit.TownyChat.config.ChatSettings;
 import com.palmergames.bukkit.TownyChat.listener.LocalTownyChatEvent;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
-import com.palmergames.bukkit.towny.object.Nation;
-import com.palmergames.bukkit.towny.object.Resident;
-import com.palmergames.bukkit.towny.object.Town;
-import com.palmergames.bukkit.towny.object.TownyUniverse;
+import com.palmergames.bukkit.towny.object.*;
 import com.palmergames.bukkit.util.BukkitTools;
 
 public class StandardChannel extends Channel {
@@ -34,7 +32,7 @@ public class StandardChannel extends Channel {
 
 	@Override
 	public void chatProcess(PlayerChatEvent event) {
-		
+		String targetName = null;
 		channelTypes exec = channelTypes.valueOf(getType().name());
 		
 		Player player = event.getPlayer();
@@ -66,6 +64,7 @@ public class StandardChannel extends Channel {
 			}
 			Format = ChatSettings.getRelevantFormatGroup(player).getTOWN();
 			recipients = new HashSet<Player>(findRecipients(player, TownyUniverse.getOnlinePlayers(town)));
+			targetName = town.getName();
 			break;
 		
 		case NATION:
@@ -75,6 +74,7 @@ public class StandardChannel extends Channel {
 			}
 			Format = ChatSettings.getRelevantFormatGroup(player).getNATION();
 			recipients = new HashSet<Player>(findRecipients(player, TownyUniverse.getOnlinePlayers(nation)));
+			targetName = nation.getName();
 			break;
 			
 		case DEFAULT:
@@ -133,7 +133,11 @@ public class StandardChannel extends Channel {
 				dynMap.postPlayerMessageToWeb(player, event.getMessage());
 			break;
 		}
-        
+
+        if (targetName!=null) {
+            IRCSex.message(msg, targetName);
+            return;
+        }
         // Relay to IRC
         CraftIRCHandler ircHander = plugin.getIRC();
         if (ircHander != null)
